@@ -30,13 +30,22 @@ def ask_openai(user_message):
 
 @bot.message_handler(commands=['start'])
 def start(msg):
+    print(f"/start from chat_id={msg.chat.id}", flush=True)
     bot.reply_to(msg, "Ciao! Sono il tuo Coach Bot 💪 Scrivimi qualcosa per iniziare!")
 
 @bot.message_handler(func=lambda m: True)
 def handle_message(msg):
-    bot.reply_to(msg, ask_openai(msg.text))
-
-import time
+    try:
+        print(f"RX from chat_id={msg.chat.id}: {msg.text}", flush=True)
+        reply = ask_openai(msg.text or "")
+        print(f"TX preview: {reply[:80]}", flush=True)
+        bot.reply_to(msg, reply)
+    except Exception as e:
+        print("Handler error:", e, flush=True)
+        try:
+            bot.reply_to(msg, "Oops, ho avuto un intoppo. Riprova tra poco!")
+        except Exception as ee:
+            print("Secondary reply error:", ee, flush=True)
 
 print("Booting Coach Bot...", flush=True)
 print(f"HAS_TELEGRAM_TOKEN={bool(TELEGRAM_TOKEN)}  HAS_OPENAI_KEY={bool(OPENAI_API_KEY)}", flush=True)
