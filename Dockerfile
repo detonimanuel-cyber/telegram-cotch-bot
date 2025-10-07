@@ -1,14 +1,14 @@
 # Usa un'immagine Python leggera
-FROM python:3.10-slim
+FROM python:3.11-slim
 
-# Imposta la directory di lavoro
+# Imposta la cartella di lavoro
 WORKDIR /app
 
-# Copia i file del progetto
-COPY . /app
+# Copia tutto il contenuto del repo nella cartella /app
+COPY . .
 
-# Installa le dipendenze
-RUN pip install -r requirements.txt
+# Installa le dipendenze dal file requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Comando per avviare il bot
+# Avvia il bot
 CMD ["python", "coach_bot.py"]
