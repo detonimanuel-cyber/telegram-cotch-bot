@@ -37,4 +37,8 @@ def handle_message(msg):
     bot.reply_to(msg, ask_openai(msg.text))
 
 if __name__ == "__main__":
-    bot.infinity_polling()
+# Disattiva qualsiasi webhook rimasto attivo prima di usare getUpdates
+bot.remove_webhook()
+
+# Avvia il long-polling e scarta eventuali messaggi “arretrati”
+bot.infinity_polling(skip_pending=True, timeout=20)
