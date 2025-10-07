@@ -36,9 +36,23 @@ def start(msg):
 def handle_message(msg):
     bot.reply_to(msg, ask_openai(msg.text))
 
-if __name__ == "__main__":
-# Disattiva qualsiasi webhook rimasto attivo prima di usare getUpdates
-bot.remove_webhook()
+import time
 
-# Avvia il long-polling e scarta eventuali messaggi “arretrati”
-bot.infinity_polling(skip_pending=True, timeout=20)
+print("Booting Coach Bot...", flush=True)
+print(f"HAS_TELEGRAM_TOKEN={bool(TELEGRAM_TOKEN)}  HAS_OPENAI_KEY={bool(OPENAI_API_KEY)}", flush=True)
+
+# Disattiva qualsiasi webhook residuo (per evitare errori 409)
+try:
+    bot.remove_webhook()
+    print("Webhook removed.", flush=True)
+except Exception as e:
+    print("Error removing webhook:", e, flush=True)
+
+# Loop di polling con retry automatico
+while True:
+    try:
+        print("Starting polling...", flush=True)
+        bot.infinity_polling(skip_pending=True, timeout=20)
+    except Exception as e:
+        print("Polling crashed:", e, flush=True)
+        time.sleep(5)
