@@ -11,4 +11,4 @@ COPY . .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Avvia il bot
-CMD ["python", "coach_bot.py"]
+CMD ["python", "-u", "coach_bot.py"]
