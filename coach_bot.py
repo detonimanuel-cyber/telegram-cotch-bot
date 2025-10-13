@@ -53,7 +53,7 @@ print(f"HAS_TELEGRAM_TOKEN={bool(TELEGRAM_TOKEN)}  HAS_OPENAI_KEY={bool(OPENAI_A
 
 # Disattiva qualsiasi webhook residuo (per evitare errori 409)
 try:
-    bot.remove_webhook()
+bot.remove_webhook(drop_pending_updates=True)
     print("Webhook removed.", flush=True)
 except Exception as e:
     print("Error removing webhook:", e, flush=True)
