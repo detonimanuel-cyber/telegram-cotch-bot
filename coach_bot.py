@@ -22,19 +22,30 @@ SYSTEM_PROMPT = (
 # ====== OPENAI WRAPPER ======
 def ask_openai(user_message: str) -> str:
     try:
-        # Modello compatibile con openai==0.28.1
+        # Usa un modello certo e supportato dalla versione 0.28.1 della libreria
         resp = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
+            model="gpt-3.5-turbo-0125",   # <-- stabile
             messages=[
                 {"role": "system", "content": SYSTEM_PROMPT},
                 {"role": "user", "content": user_message or ""},
             ],
             max_tokens=250,
             temperature=0.9,
+            timeout=20,
         )
-        return resp.choices[0].message.content.strip()
+        # Nota: con openai==0.28.1 puoi accedere così:
+        return resp.choices[0].message["content"].strip()
+    except openai.error.AuthenticationError:
+        print("OpenAI error: AuthenticationError (API key non valida)", flush=True)
+        return "La chiave OpenAI non è valida o è scaduta. Controllo e riprovo."
+    except openai.error.RateLimitError:
+        print("OpenAI error: RateLimitError", flush=True)
+        return "Sto ricevendo molte richieste. Riprova tra qualche secondo 🙏"
+    except openai.error.InvalidRequestError as e:
+        print(f"OpenAI error: InvalidRequestError: {e}", flush=True)
+        return "Richiesta non valida al modello. Riprovo tra poco."
     except Exception as e:
-        print("OpenAI error:", e, flush=True)
+        print(f"OpenAI error (generic): {repr(e)}", flush=True)
         return "Ho un problema a contattare il cervello centrale. Riprova tra poco."
 
 # ====== HANDLERS ======
